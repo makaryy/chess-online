@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Board from "./components/Board";
-import { BoardType, gameSubject } from "./Game";
+import { gameSubject } from "./Game";
 import { setBoard } from "./redux/board";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "./redux/store";
+import { useDispatch } from "react-redux";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
 
 function App() {
     const dispatch = useDispatch();
@@ -12,8 +13,10 @@ function App() {
         return () => subscribe.unsubscribe();
     }, []);
     return (
-        <div className="container mx-auto h-screen items-center justify-center">
-            <Board />
+        <div className="flex container mx-auto h-screen items-center justify-center">
+            <DndProvider backend={HTML5Backend}>
+                <Board />
+            </DndProvider>
         </div>
     );
 }
