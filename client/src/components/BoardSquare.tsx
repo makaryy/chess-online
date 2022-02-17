@@ -1,7 +1,9 @@
 import Piece from "./Piece";
-import { BoardPieceType, move } from "../Game";
+import { BoardPieceType, gameSubject, handleMove, move, Promotion } from "../Game";
 import { useDrop } from "react-dnd";
 import { Square } from "chess.js";
+import { useEffect, useState } from "react";
+import Promote from "./Promote";
 
 interface SquareProps {
     piece: BoardPieceType;
@@ -21,18 +23,28 @@ const findSquareColor = (i: number) => {
 };
 
 function BoardSquare({ piece, i, position }: SquareProps) {
+    const [promotion, setPromotion] = useState<Promotion | null>(null);
     const [, drop] = useDrop({
         accept: "piece",
         drop: (item: Item) => {
             const itemIdData = item.id.split("_");
             const fromPosition = itemIdData[0] as Square;
-            move(fromPosition, position);
+            handleMove(fromPosition, position);
         }
     });
+
+    useEffect(() => {
+        const subscribe = gameSubject.subscribe(({ pendingPromotion }) =>
+            pendingPromotion && pendingPromotion.to === position ? setPromotion(pendingPromotion) : setPromotion(null)
+        );
+        return () => subscribe.unsubscribe();
+    }, []);
+
     const squareColor = findSquareColor(i);
+
     return (
         <div className={`w-full h-full justify-center items-center ${squareColor}`} ref={drop}>
-            {piece && <Piece piece={piece} position={position} />}
+            {promotion ? <Promote promotion={promotion} /> : piece ? <Piece piece={piece} position={position} /> : null}
         </div>
     );
 }

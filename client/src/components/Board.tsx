@@ -2,7 +2,7 @@ import { Square } from "chess.js";
 import { useSelector } from "react-redux";
 import { BoardPieceType } from "../Game";
 import { RootState } from "../redux/store";
-import BoardSquare from "./Square";
+import BoardSquare from "./BoardSquare";
 
 function Board() {
     const board = useSelector((state: RootState) => state.board.board);
