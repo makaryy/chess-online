@@ -5,7 +5,7 @@ interface PromoteProps {
     promotion: Promotion;
 }
 
-function Promote({ promotion: { from, to, color } }: PromoteProps) {
+const Promote = ({ promotion: { from, to, color } }: PromoteProps) => {
     const promotionPieces = ["r", "b", "n", "q"];
     return (
         <div className="w-full h-full grid grid-rows-2 grid-cols-2 items-center justify-center">
@@ -16,7 +16,6 @@ function Promote({ promotion: { from, to, color } }: PromoteProps) {
                         className="flex w-full h-full items-center justify-center"
                         onClick={() => {
                             move(from, to, p as Exclude<PieceType, "p" | "k"> | undefined);
-                            console.log(p);
                         }}>
                         <img
                             src={require(`../assets/${p}_${color.color}.svg`)}
@@ -28,6 +27,6 @@ function Promote({ promotion: { from, to, color } }: PromoteProps) {
             })}
         </div>
     );
-}
+};
 
 export default Promote;

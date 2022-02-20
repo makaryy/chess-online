@@ -15,10 +15,14 @@ const boardSlice = createSlice({
     reducers: {
         setBoard: (state, action: PayloadAction<BoardType>) => {
             state.board = action.payload;
+        },
+        flipBoard: (state, action: PayloadAction<"w" | "b">) => {
+            const flippedBoard = [...state.board].reverse();
+            state.board = flippedBoard;
         }
     }
 });
 
-export const { setBoard } = boardSlice.actions;
+export const { setBoard, flipBoard } = boardSlice.actions;
 
 export default boardSlice.reducer;

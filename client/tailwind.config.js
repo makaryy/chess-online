@@ -6,7 +6,7 @@ module.exports = {
                 8: "repeat(8, minmax(0, 1fr))"
             },
             boxShadow: {
-                promotion: "0px 0px 15px 5px"
+                alert: "0px 0px 15px 5px"
             }
         }
     },
