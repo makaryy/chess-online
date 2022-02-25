@@ -1,12 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import boardReducer from "./board";
-import turnReducer from "./turn";
+
+import gameReducer from "./game";
 // ...
 
 const store = configureStore({
     reducer: {
         board: boardReducer,
-        turn: turnReducer
+        game: gameReducer
     }
 });
 

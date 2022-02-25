@@ -1,35 +1,25 @@
-import { useEffect, useState } from "react";
-import Board from "./components/Board";
-import { gameSubject } from "./Game";
-import { setBoard } from "./redux/board";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import GameApp from "./components/GameApp";
+import GuestLogin from "./components/GuestLogin";
+import Home from "./components/Home";
+import { auth } from "./firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { useDispatch } from "react-redux";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { DndProvider } from "react-dnd";
-import { setTurn } from "./redux/turn";
-import Alert from "./components/Alert";
 
 const App = () => {
     const dispatch = useDispatch();
-    const [alert, setAlert] = useState<string | null>(null);
-    useEffect(() => {
-        const subscribe = gameSubject.subscribe((game) => {
-            dispatch(setBoard(game.board));
-            dispatch(setTurn(game.turn));
-            if (game.result) {
-                setAlert(game.result);
-            } else {
-                setAlert(null);
-            }
-        });
 
-        return () => subscribe.unsubscribe();
-    }, []);
     return (
-        <div className="flex container mx-auto h-screen items-center justify-center">
-            <DndProvider backend={HTML5Backend}>
-                {alert && <Alert alert={alert} />}
-                <Board />
-            </DndProvider>
+        <div>
+            <Router>
+                <Routes>
+                    <Route path="/home" element={<Home />}></Route>
+                    <Route path="/login/guest" element={<GuestLogin />}></Route>
+                    <Route path="/" element={<Home />}></Route>
+                    <Route path="/game/:id" element={<GameApp />}></Route>
+                </Routes>
+            </Router>
         </div>
     );
 };
