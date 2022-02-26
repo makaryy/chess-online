@@ -1,11 +1,10 @@
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase/firebase";
-import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, setDoc, doc, DocumentData } from "firebase/firestore";
 import { setGame } from "../redux/game";
 
 export interface Member {
@@ -16,15 +15,17 @@ export interface Member {
     photoURL?: string | null | undefined;
     email?: string | null | undefined;
 }
+
 const Home = () => {
-    const [userr, loading, error] = useAuthState(auth);
+    const [user, loading, error] = useAuthState(auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [games, setGames] = useState<DocumentData[]>([]);
 
     const startGame = async () => {
         const member: Member = {
-            displayName: userr?.displayName,
-            uid: userr?.uid,
+            displayName: user?.displayName,
+            uid: user?.uid,
             color: Math.round(Math.random()) === 0 ? "w" : "b",
             creator: true
         };
@@ -42,13 +43,27 @@ const Home = () => {
         }
     };
 
-    const [opacity, setOpacity] = useState("opacity-0");
+    const getGames = async () => {
+        let tempGames: DocumentData[] = [];
 
-    if (userr?.uid)
+        const q = query(collection(db, "games"), where("status", "==", "waiting"));
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            tempGames.push(doc.data());
+        });
+        setGames(tempGames);
+    };
+
+    const [opacity, setOpacity] = useState("opacity-100");
+
+    if (loading) {
+        <div className="flex flex-col h-screen justify-center container items-center mx-auto">Loading...</div>;
+    } else if (user?.uid)
         return (
             <div className="flex flex-col h-screen justify-center container items-center mx-auto">
                 <div className="flex flex-col items-center justify-center w-full">
-                    <p className="text-3xl my-16 font-medium">{`Welcome, ${userr.displayName}. Start a new game or join your friend.`}</p>
+                    <p className="text-3xl my-16 font-medium">{`Welcome, ${user.displayName}. Start a new game or join your friend.`}</p>
                     <button
                         className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center"
                         onClick={startGame}>
@@ -57,19 +72,36 @@ const Home = () => {
                     </button>
                     <button
                         className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center"
-                        onClick={() => setOpacity("opacity-100")}>
+                        onClick={async () => {
+                            await getGames();
+                        }}>
                         <img src="/icons/join-icon.svg" alt="google" className="w-5 h-5 mx-3" />
                         Join existing game
                     </button>
                     <div className={`flex flex-col justify-center text-center ${opacity}`}>
                         <p className="text-2xl my-2 font-normal">Choose your oponent</p>
-                        {["Andrzej", "Marek", "KOZAK NAJWIEKSZY", "ZIUTEK"].map((m) => {
-                            return (
-                                <div className="w-full" key={m}>
-                                    {m}
-                                </div>
-                            );
-                        })}
+                        {games &&
+                            games.map((g) => {
+                                return (
+                                    <div
+                                        className="w-full text-black cursor-pointer"
+                                        key={g.id}
+                                        onClick={() => {
+                                            const oponent = g.members.find((m: Member) => m.uid !== user.uid);
+                                            const color = oponent.color === "w" ? "b" : "w";
+                                            const newUser: Member = {
+                                                uid: user.uid,
+                                                color,
+                                                creator: false,
+                                                displayName: user.displayName
+                                            };
+                                            dispatch(setGame({ id: g.id, members: [...g.members, newUser], status: "in_progress" }));
+                                            navigate(`game/${g.id}`);
+                                        }}>
+                                        {g.id}
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
             </div>

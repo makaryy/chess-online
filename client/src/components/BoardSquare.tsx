@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 import Promote from "./Promote";
 import { Member } from "./Home";
 import { DocumentData } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
 
 interface SquareProps {
     piece: BoardPieceType;
@@ -27,7 +25,6 @@ const findSquareColor = (i: number) => {
 };
 
 const BoardSquare = ({ piece, i, position }: SquareProps) => {
-    const game = useSelector((state: RootState) => state.game);
     const [promotion, setPromotion] = useState<Promotion | null>(null);
     const [, drop] = useDrop({
         accept: "piece",
@@ -48,7 +45,6 @@ const BoardSquare = ({ piece, i, position }: SquareProps) => {
                               board: ({ type: PieceType; color: "b" | "w" } | null)[][];
                               pendingPromotion: Promotion;
                               isGameOver: boolean;
-                              position: "b" | "w";
                               member: Member;
                               oponent: Member;
                               result: string | null | undefined;
@@ -61,7 +57,7 @@ const BoardSquare = ({ piece, i, position }: SquareProps) => {
                 }
             );
         }
-        // return () => subscribe.unsubscribe();
+        return () => subscribe.unsubscribe();
     }, [position]);
 
     const squareColor = findSquareColor(i);

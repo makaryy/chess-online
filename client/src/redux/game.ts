@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Member } from "../components/Home";
-import { BoardType, Promotion } from "../Game";
 
 interface GameState {
     status: string;

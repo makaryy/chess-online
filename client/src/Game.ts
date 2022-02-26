@@ -4,10 +4,7 @@ import { map } from "rxjs/operators";
 import { fromRef } from "rxfire/firestore";
 import { doc, DocumentData, DocumentReference, Firestore, getDoc, updateDoc } from "firebase/firestore";
 import { Member } from "./components/Home";
-import { auth, db } from "./firebase/firebase";
 import { Observable } from "rxjs";
-import { doc as RxDoc } from "rxfire/firestore";
-import { DocumentSnapshot } from "rxfire/firestore/interfaces";
 import { User } from "firebase/auth";
 type ChessType = (fen?: string) => ChessInstance;
 const ChessImport = Chess as unknown;
@@ -34,31 +31,27 @@ export interface Game {
     result?: null | string;
 }
 
-//CHECK CORRECT TYPE FOR THAT
-// export let gameSubject: Observable<DocumentSnapshot<DocumentData>>;
-export let gameSubject: Observable<
+type GameSubjectType = Observable<
     | {
           board: ({ type: PieceType; color: "b" | "w" } | null)[][];
           pendingPromotion: any;
           isGameOver: boolean;
-          position: "b" | "w";
           member: Member;
-          oponent: any;
+          oponent: Member;
           result: string | null | undefined;
+          status: string;
       }
     | undefined
 >;
+export let gameSubject: GameSubjectType;
 export let gameRef: DocumentReference<DocumentData>;
 export let member: Member;
-
-const { currentUser } = auth;
 
 export const initGame = async (db: Firestore, collection: "games", id: string, user: User | null | undefined) => {
     gameRef = doc(db, collection, id);
     const gameData = await getDoc(gameRef);
     const initialGame = gameData.data();
     if (!initialGame) {
-        console.log(" Game doesn't exist");
         return "Game doesn't exist";
     } else {
         const creator = initialGame.members.find((m: Member) => m.creator === true);
@@ -73,12 +66,9 @@ export const initGame = async (db: Firestore, collection: "games", id: string, u
                 const updatedMembers = [...initialGame.members, currentMember];
                 await updateDoc(gameRef, { members: updatedMembers, status: "in_progress" });
             }
-        } else {
-            console.log("Cannot find player");
+        } else if (initialGame?.status === "in_progress") {
+            return "Game in progress";
         }
-        // else if (initialGame?.status === "in_progress") {
-        //     return "Game in progress";
-        // }
     }
 
     chess.reset();
@@ -100,16 +90,15 @@ export const initGame = async (db: Firestore, collection: "games", id: string, u
                     board: chess.board(),
                     pendingPromotion,
                     isGameOver,
-                    position: member.color,
                     member,
                     oponent,
                     result: isGameOver ? getGameResult() : null,
+                    status: initialGame.status,
                     ...restOfGame
                 };
             }
         })
     );
-    // return gameSubject;
 };
 
 export const move = (from: Square, to: Square, promotion?: Exclude<PieceType, "p" | "k"> | undefined) => {
@@ -144,7 +133,7 @@ export const handleMove = (from: Square, to: Square) => {
 };
 
 const updateGame = async (pendingPromotion?: Promotion) => {
-    const updatedData = { gameData: chess.fen(), pendingPromotion: pendingPromotion || null };
+    const updatedData = { gameData: chess.fen(), pendingPromotion: pendingPromotion || null, status: chess.game_over() ? "over" : "in_progress" };
     await updateDoc(gameRef, updatedData);
 };
 

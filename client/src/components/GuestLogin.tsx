@@ -2,18 +2,19 @@ import { signInAnonymously, updateProfile } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 
 const GuestLogin = () => {
     const [name, setName] = useState<string>("");
-    const dispatch = useDispatch();
     let navigate = useNavigate();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        setLoading(true);
         e.preventDefault();
         const login = await signInAnonymously(auth);
-        updateProfile(login.user, { displayName: name });
+        await updateProfile(login.user, { displayName: name });
         if (login) {
+            setLoading(false);
             navigate("/");
         }
     };
@@ -31,7 +32,7 @@ const GuestLogin = () => {
                     className="w-96 border active:border-2 border-neutral-400  hover:border-black hover:shadow-md hover:shadow-black bg-neutral-200 rounded-xl p-2 text-center m-4"
                 />
                 <button type="submit" className="w-32 p-2 border border-black rounded-xl hover:shadow-md hover:shadow-black">
-                    Enter
+                    {loading ? <img src="/icons/circle.svg" alt="Loading..." className="animate-spin w-4 h-4" /> : <span>Enter</span>}
                 </button>
             </form>
         </div>

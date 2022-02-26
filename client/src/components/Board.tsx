@@ -10,13 +10,16 @@ import BoardSquare from "./BoardSquare";
 const Board = () => {
     const board = useSelector((state: RootState) => state.board.board);
     const game = useSelector((state: RootState) => state.game);
+
     const [user, loading, error] = useAuthState(auth);
 
-    const [color, setColor] = useState<"w" | "b" | undefined>("w");
+    const [color, setColor] = useState<"w" | "b" | undefined>(undefined);
     useEffect(() => {
-        const member = game.members.find((m) => m.uid === user?.uid);
-        if (member) {
-            setColor(member.color);
+        if (user) {
+            const member = game.members.find((m) => m.uid === user.uid);
+            if (member) {
+                setColor(member.color);
+            }
         }
     }, []);
 
