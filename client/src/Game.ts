@@ -46,6 +46,7 @@ type GameSubjectType = Observable<
 export let gameSubject: GameSubjectType;
 export let gameRef: DocumentReference<DocumentData>;
 export let member: Member;
+export let oponent: Member;
 
 export const initGame = async (db: Firestore, collection: "games", id: string, user: User | null | undefined) => {
     gameRef = doc(db, collection, id);
@@ -79,7 +80,7 @@ export const initGame = async (db: Firestore, collection: "games", id: string, u
             if (game) {
                 const { pendingPromotion, gameData, ...restOfGame } = game;
                 member = game.members.find((m: Member) => m.uid === user?.uid);
-                const oponent = game.members.find((m: Member) => m.uid !== user?.uid);
+                oponent = game.members.find((m: Member) => m.uid !== user?.uid);
 
                 if (gameData) {
                     chess.load(gameData);
@@ -103,7 +104,7 @@ export const initGame = async (db: Firestore, collection: "games", id: string, u
 
 export const move = (from: Square, to: Square, promotion?: Exclude<PieceType, "p" | "k"> | undefined) => {
     if (gameRef) {
-        if (member.color === chess.turn()) {
+        if (member.color === chess.turn() && oponent) {
             if (promotion) {
                 const validPromotionMove = chess.move({ from, to, promotion });
                 if (validPromotionMove) {

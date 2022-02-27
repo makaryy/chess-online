@@ -32,7 +32,7 @@ const GuestLogin = () => {
                     className="w-96 border active:border-2 border-neutral-400  hover:border-black hover:shadow-md hover:shadow-black bg-neutral-200 rounded-xl p-2 text-center m-4"
                 />
                 <button type="submit" className="w-32 p-2 border border-black rounded-xl hover:shadow-md hover:shadow-black">
-                    {loading ? <img src="/icons/circle.svg" alt="Loading..." className="animate-spin w-4 h-4" /> : <span>Enter</span>}
+                    {loading ? <img src="/icons/spinner.svg" alt="Loading..." className="animate-spin w-4 h-4" /> : <span>Enter</span>}
                 </button>
             </form>
         </div>

@@ -15,7 +15,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useBeforeunload } from "react-beforeunload";
 import { RootState } from "../redux/store";
-import { setGame } from "../redux/game";
+import { updateMembers } from "../redux/game";
 
 const GameApp = () => {
     const dispatch = useDispatch();
@@ -24,7 +24,25 @@ const GameApp = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const gameState = useSelector((state: RootState) => state.game);
+    const [oponent, setOponent] = useState<Member | undefined>(gameState.members.find((m) => m.uid !== user?.uid));
+
+    const searchForOponent = async () => {
+        while (!oponent) {
+            if (id) {
+                const game = await getDoc(doc(db, "games", id));
+                const gameData = await game.data();
+                const op = gameData?.members.find((m: Member) => m.uid !== user?.uid);
+                if (op) {
+                    updateMembers([...gameState.members, op]);
+                    setOponent(op);
+                    break;
+                }
+            }
+        }
+    };
+
     useEffect(() => {
+        !oponent && searchForOponent();
         if (error) {
             console.error(error);
         } else {
@@ -49,8 +67,6 @@ const GameApp = () => {
                         ) => {
                             if (game) {
                                 dispatch(setBoard(game.board));
-
-                                // id && dispatch(setGame({ id, members: [game.member, game.oponent], status: game.status }));
                                 if (game.result) {
                                     setAlert(game.result);
                                 } else {
@@ -86,7 +102,20 @@ const GameApp = () => {
         <div className="flex container mx-auto h-screen items-center justify-center">
             <DndProvider backend={HTML5Backend}>
                 {alert && <Alert alert={alert} />}
-                {!loading && !error && gameState.id && <Board />}
+                {!loading && !error && gameState.id && (
+                    <div>
+                        <div className="flex flex-row">
+                            <span className="w-max text-xl">{oponent ? oponent.displayName : "Waiting for oponent.."}</span>
+                            &nbsp;
+                            <img src={`${oponent?.photoURL ? oponent.photoURL : "/icons/circle-user.svg"}`} alt="" className="w-5" />
+                        </div>
+                        <Board />
+                        <div className="flex flex-row justify-end">
+                            <img src={`${user?.photoURL ? user.photoURL : "/icons/circle-user.svg"}`} alt="" className="w-5" /> &nbsp;
+                            <span className="w-max text-xl">{user?.displayName}</span>
+                        </div>
+                    </div>
+                )}
             </DndProvider>
         </div>
     );

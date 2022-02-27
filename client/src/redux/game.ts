@@ -21,10 +21,13 @@ const gameSlice = createSlice({
             state.status = action.payload.status;
             state.members = action.payload.members;
             state.id = action.payload.id;
+        },
+        updateMembers: (state, action: PayloadAction<Member[]>) => {
+            state.members = action.payload;
         }
     }
 });
 
-export const { setGame } = gameSlice.actions;
+export const { setGame, updateMembers } = gameSlice.actions;
 
 export default gameSlice.reducer;
