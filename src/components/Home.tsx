@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase/firebase";
 import { collection, query, where, getDocs, setDoc, doc, DocumentData } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 import { setGame } from "../redux/game";
 
 export interface Member {
@@ -62,6 +63,9 @@ const Home = () => {
             {loading && <span>Loading...</span>}
             {user?.uid && (
                 <div className="flex flex-col items-center justify-center w-full">
+                    <div className="absolute top-8 right-8">
+                        <button onClick={async () => await signOut(auth)}>SIGN OUT</button>
+                    </div>
                     <p className="text-3xl my-16 font-medium">{`Welcome, ${user.displayName}. Start a new game or join your friend.`}</p>
                     <button
                         className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center"
@@ -78,43 +82,50 @@ const Home = () => {
                         Join existing game
                     </button>
                     <div className={`flex flex-col justify-center text-center ${opacity}`}>
-                        <p className="text-2xl my-2 font-normal">Choose your oponent</p>
-                        {games &&
-                            games.map((g) => {
-                                return (
-                                    <div
-                                        className="w-full text-black cursor-pointer"
-                                        key={g.id}
-                                        onClick={() => {
-                                            const oponent = g.members.find((m: Member) => m.uid !== user.uid);
-                                            const color = oponent.color === "w" ? "b" : "w";
-                                            const newUser: Member = {
-                                                uid: user.uid,
-                                                color,
-                                                creator: false,
-                                                displayName: user.displayName
-                                            };
-                                            dispatch(setGame({ id: g.id, members: [...g.members, newUser], status: "in_progress" }));
-                                            navigate(`game/${g.id}`);
-                                        }}>
-                                        {g.id}
-                                    </div>
-                                );
-                            })}
+                        {games.length > 0 && (
+                            <div>
+                                <p className="text-2xl my-2 font-normal">Choose your oponent</p>
+                                {games.map((g) => {
+                                    return (
+                                        <div
+                                            className="w-full text-black cursor-pointer"
+                                            key={g.id}
+                                            onClick={() => {
+                                                const oponent = g.members.find((m: Member) => m.uid !== user.uid);
+                                                const color = oponent.color === "w" ? "b" : "w";
+                                                const newUser: Member = {
+                                                    uid: user.uid,
+                                                    color,
+                                                    creator: false,
+                                                    displayName: user.displayName
+                                                };
+                                                dispatch(setGame({ id: g.id, members: [...g.members, newUser], status: "in_progress" }));
+                                                navigate(`game/${g.id}`);
+                                            }}>
+                                            {g.id}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
             {!user?.uid && !loading && (
                 <div className="flex flex-col items-center justify-center w-full">
                     <p className="text-3xl my-3 font-medium">Choose Login Option</p>
-                    <button className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center">
-                        <img src="/icons/google-icon.svg" alt="google" className="w-5 h-5 mx-3" />
-                        Google
-                    </button>
-                    <button className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center">
-                        <img src="/icons/email-icon.svg" alt="email" className="w-5 h-5 mx-3" />
-                        Email
-                    </button>
+                    <Link to="../login/google">
+                        <button className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center">
+                            <img src="/icons/google-icon.svg" alt="google" className="w-5 h-5 mx-3" />
+                            Google
+                        </button>
+                    </Link>
+                    <Link to="../login/email">
+                        <button className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center">
+                            <img src="/icons/email-icon.svg" alt="email" className="w-5 h-5 mx-3" />
+                            Email
+                        </button>
+                    </Link>
                     <Link to="../login/guest">
                         <button className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center">
                             <img src="/icons/user-icon.svg" alt="guest" className="w-5 h-5 mx-3" />
