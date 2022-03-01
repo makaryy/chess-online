@@ -62,7 +62,8 @@ export const initGame = async (db: Firestore, collection: "games", id: string, u
                     displayName: user.displayName,
                     uid: user.uid,
                     creator: false,
-                    color: creator.color === "w" ? "b" : "w"
+                    color: creator.color === "w" ? "b" : "w",
+                    photoURL: user.photoURL
                 };
                 const updatedMembers = [...initialGame.members, currentMember];
                 await updateDoc(gameRef, { members: updatedMembers, status: "in_progress" });

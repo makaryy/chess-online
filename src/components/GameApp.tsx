@@ -99,7 +99,7 @@ const GameApp = () => {
     });
 
     return (
-        <div className="flex container mx-auto h-screen items-center justify-center">
+        <div className="flex container mx-auto min-h-screen items-center justify-center">
             <DndProvider backend={HTML5Backend}>
                 {alert && <Alert alert={alert} />}
                 {!loading && !error && gameState.id && (
@@ -107,11 +107,11 @@ const GameApp = () => {
                         <div className="flex flex-row">
                             <span className="w-max text-xl">{oponent ? oponent.displayName : "Waiting for oponent.."}</span>
                             &nbsp;
-                            <img src={`${oponent?.photoURL ? oponent.photoURL : "/icons/circle-user.svg"}`} alt="" className="w-5" />
+                            <img src={`${oponent?.photoURL ? oponent.photoURL : "/icons/circle-user.svg"}`} alt="" className="w-6 rounded-full" />
                         </div>
                         <Board />
                         <div className="flex flex-row justify-end">
-                            <img src={`${user?.photoURL ? user.photoURL : "/icons/circle-user.svg"}`} alt="" className="w-5" /> &nbsp;
+                            <img src={`${user?.photoURL ? user.photoURL : "/icons/circle-user.svg"}`} alt="" className="w-6 rounded-full" /> &nbsp;
                             <span className="w-max text-xl">{user?.displayName}</span>
                         </div>
                     </div>
