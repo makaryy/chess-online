@@ -1,13 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import boardReducer from "./board";
-
 import gameReducer from "./game";
+import chatReducer from "./chat";
 // ...
 
 const store = configureStore({
     reducer: {
         board: boardReducer,
-        game: gameReducer
+        game: gameReducer,
+        chat: chatReducer
     }
 });
 

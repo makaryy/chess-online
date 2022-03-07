@@ -57,7 +57,6 @@ const BoardSquare = ({ piece, i, position }: SquareProps) => {
                 }
             );
         }
-        return () => subscribe.unsubscribe();
     }, [position]);
 
     const squareColor = findSquareColor(i);

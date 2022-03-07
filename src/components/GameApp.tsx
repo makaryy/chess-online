@@ -16,6 +16,8 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useBeforeunload } from "react-beforeunload";
 import { RootState } from "../redux/store";
 import { updateMembers } from "../redux/game";
+import Chat from "./Chat";
+import { setChat } from "../redux/chat";
 
 const GameApp = () => {
     const dispatch = useDispatch();
@@ -24,6 +26,7 @@ const GameApp = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const gameState = useSelector((state: RootState) => state.game);
+    const chat = useSelector((state: RootState) => state.chat);
     const [oponent, setOponent] = useState<Member | undefined>(gameState.members.find((m) => m.uid !== user?.uid));
 
     const searchForOponent = async () => {
@@ -78,9 +81,6 @@ const GameApp = () => {
                 }
             };
             init();
-            return () => {
-                subscribe && subscribe.unsubscribe();
-            };
         }
     });
 
@@ -93,30 +93,65 @@ const GameApp = () => {
                 console.log("Game abandoned");
             } else if (gameData?.status === "in_progress") {
                 await updateDoc(doc(db, "games", id), { status: "over" });
+                chat.id &&
+                    (await updateDoc(doc(db, "chats", chat.id), {
+                        ...chat,
+                        messages: [
+                            ...chat.messages,
+                            {
+                                msg: `${user?.displayName} left the game :(`,
+                                img: "",
+                                user: { uid: user?.uid, displayName: user?.displayName },
+                                createdAt: JSON.stringify(new Date())
+                            }
+                        ]
+                    }));
+                dispatch(
+                    setChat({
+                        ...chat,
+                        messages: [
+                            ...chat.messages,
+                            {
+                                msg: `${user?.displayName} left the game :(`,
+                                img: "",
+                                user: { uid: user?.uid, displayName: user?.displayName },
+                                createdAt: JSON.stringify(new Date())
+                            }
+                        ]
+                    })
+                );
                 console.log(gameData.gameData);
             }
         }
     });
 
     return (
-        <div className="flex container mx-auto min-h-screen items-center justify-center">
-            <DndProvider backend={HTML5Backend}>
-                {alert && <Alert alert={alert} />}
-                {!loading && !error && gameState.id && (
-                    <div>
-                        <div className="flex flex-row">
-                            <span className="w-max text-xl">{oponent ? oponent.displayName : "Waiting for oponent.."}</span>
-                            &nbsp;
-                            <img src={`${oponent?.photoURL ? oponent.photoURL : "/icons/circle-user.svg"}`} alt="" className="w-6 rounded-full" />
+        <div className="flex flex-row">
+            <div className="flex container mx-auto min-h-screen items-center justify-center">
+                <DndProvider backend={HTML5Backend}>
+                    {alert && <Alert alert={alert} />}
+                    {!loading && !error && gameState.id && (
+                        <div>
+                            <div className="flex flex-row">
+                                <p className="w-max text-xl">{oponent ? oponent.displayName : "Waiting for oponent.."}</p>
+                                {oponent && (
+                                    <img
+                                        src={`${oponent?.photoURL ? oponent.photoURL : "/icons/circle-user.svg"}`}
+                                        alt=""
+                                        className="w-6 rounded-full mx-2"
+                                    />
+                                )}
+                            </div>
+                            <Board />
+                            <div className="flex flex-row justify-end">
+                                <img src={`${user?.photoURL ? user.photoURL : "/icons/circle-user.svg"}`} alt="" className="w-6 rounded-full mx-2" />{" "}
+                                <p className="w-max text-xl">{user?.displayName}</p>
+                            </div>
                         </div>
-                        <Board />
-                        <div className="flex flex-row justify-end">
-                            <img src={`${user?.photoURL ? user.photoURL : "/icons/circle-user.svg"}`} alt="" className="w-6 rounded-full" /> &nbsp;
-                            <span className="w-max text-xl">{user?.displayName}</span>
-                        </div>
-                    </div>
-                )}
-            </DndProvider>
+                    )}
+                </DndProvider>
+            </div>
+            <Chat />
         </div>
     );
 };

@@ -18,7 +18,7 @@ export interface Member {
 }
 
 const Home = () => {
-    const [user, loading, error] = useAuthState(auth);
+    const [user, loading] = useAuthState(auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [games, setGames] = useState<DocumentData[]>([]);
