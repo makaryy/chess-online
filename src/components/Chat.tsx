@@ -76,7 +76,7 @@ const Chat = () => {
                         onChange={(e) => setMessage(e.target.value)}
                         value={message}
                         name="message"
-                        autoComplete="false"
+                        autoComplete="off"
                         className="w-4/5 border border-neutral-400 bg-neutral-300 rounded-xl rounded-r-none p-2 text-center mb-1 focus:bg-neutral-200 focus:outline-0"
                     />
                     <button type="submit" className="w-1/5 text-white rounded-xl border border-white border-l-0 p-2 rounded-l-none">
