@@ -37,7 +37,7 @@ const BoardSquare = ({ piece, i, position }: SquareProps) => {
         canDrop: (item) => {
             const moves = chess.moves({ square: item.position, verbose: true });
             const squares = moves.map((m) => m.to);
-            if (squares.find((s) => s === position) && item.color === chess.turn()) return true;
+            if (squares.find((s) => s === position)) return true;
             return false;
         },
         collect: (monitor) => {

@@ -2,6 +2,7 @@ import { signInAnonymously, updateProfile } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
+import Loading from "./Loading";
 
 const GuestLogin = () => {
     const [name, setName] = useState<string>("");
@@ -20,6 +21,7 @@ const GuestLogin = () => {
     };
     return (
         <div className="flex flex-col h-screen justify-center container items-center mx-auto">
+            {loading && <Loading/>}
             <p className="text-3xl my-3 font-medium">Type your name here</p>
             <form onSubmit={handleSubmit} className="flex flex-col items-center w-1/2">
                 <div className="flex flex-col items-center justify-center w-full mt-4">
@@ -34,7 +36,7 @@ const GuestLogin = () => {
                     />
                 </div>
                 <button type="submit" className="w-32 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black">
-                    {loading ? <img src="/icons/spinner.svg" alt="Loading..." className="animate-spin w-4 h-4" /> : <span>Enter</span>}
+                    Enter
                 </button>
             </form>
         </div>

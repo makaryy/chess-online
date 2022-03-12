@@ -58,7 +58,7 @@ const Chat = () => {
                 ...chat.messages,
                 {
                     msg: message,
-                    img: user.photoURL ? user.photoURL : "/icons/user-icon.svg",
+                    img: user.photoURL ? user.photoURL : "/icons/circle-user.svg",
                     user: { uid: user.uid, displayName: user.displayName },
                     createdAt: JSON.stringify(new Date())
                 }
@@ -69,7 +69,7 @@ const Chat = () => {
         }
     };
     return (
-        <div className="bg-neutral-800 w-2/5 h-screen flex flex-col-reverse">
+        <div className="bg-neutral-700 w-2/5 h-screen flex flex-col-reverse">
             <div className="flex flex-row w-full">
                 <form className="w-full" onSubmit={(e) => sendMessage(e)}>
                     <input
@@ -90,7 +90,7 @@ const Chat = () => {
                         const player = m.user?.uid === user?.uid ? true : false;
                         return (
                             <div className={player ? "flex flex-row-reverse w-full mx-auto my-1" : "flex flex-row w-full mx-auto my-1"} key={i}>
-                                <img src={m.img} alt="" className="w-6 h-6 rounded-full mx-3" />
+                                <img src={m.img} alt="" className="w-6 h-6 rounded-full mx-3"/>
                                 <span className={player ? "bg-blue-500 rounded-2xl px-2" : "bg-red-500 rounded-2xl px-2"}>{m.msg}</span>
                             </div>
                         );

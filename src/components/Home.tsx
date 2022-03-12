@@ -7,6 +7,7 @@ import { auth, db } from "../firebase/firebase";
 import { collection, query, where, getDocs, setDoc, doc, DocumentData } from "firebase/firestore";
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { setGame } from "../redux/game";
+import Loading from "./Loading";
 
 export interface Member {
     color: "w" | "b";
@@ -67,21 +68,21 @@ const Home = () => {
 
     return (
         <div className="flex flex-col h-screen justify-center container items-center mx-auto">
-            {loading && <span>Loading...</span>}
+            {loading && <Loading/>}
             {user?.uid && (
                 <div className="flex flex-col items-center justify-center w-full">
                     <div className="absolute top-8 right-8">
                         <button onClick={async () => await signOut(auth)}>SIGN OUT</button>
                     </div>
                     <p className="text-3xl my-16 font-medium">{`Welcome, ${user.displayName}. Start a new game or join your friend.`}</p>
-                    <button
-                        className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center"
+                    <button 
+                        className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center"
                         onClick={startGame}>
                         <img src="/icons/new-game-icon.svg" alt="google" className="w-5 h-5 mx-3" />
                         Start new Game
                     </button>
                     <button
-                        className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center"
+                        className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center"
                         onClick={async () => {
                             await getGames();
                         }}>
@@ -124,19 +125,19 @@ const Home = () => {
 
                     <button
                         onClick={googleLogin}
-                        className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center">
+                        className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center">
                         <img src="/icons/google-icon.svg" alt="google" className="w-5 h-5 mx-3" />
                         Google
                     </button>
 
                     <Link to="../login/email">
-                        <button className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center">
+                        <button className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center">
                             <img src="/icons/email-icon.svg" alt="email" className="w-5 h-5 mx-3" />
                             Email
                         </button>
                     </Link>
                     <Link to="../login/guest">
-                        <button className="w-96 h-12 bg-red-300 hover:border hover:border-red-400 my-1 rounded-2xl shadow-md shadow-red-300 flex items-center justify-center">
+                        <button className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center">
                             <img src="/icons/user-icon.svg" alt="guest" className="w-5 h-5 mx-3" />
                             Guest
                         </button>

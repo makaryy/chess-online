@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { auth } from "../firebase/firebase";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import Loading from "./Loading";
 
 const EmailLogin = () => {
     const [email, setEmail] = useState<string>("");
@@ -45,6 +46,7 @@ const EmailLogin = () => {
 
     return (
         <div className="flex flex-col h-screen justify-center container items-center mx-auto">
+            {loading && <Loading/>}
             <p className="text-3xl my-3 font-medium w-full text-center">{register ? "Create account" : "Sign In"}</p>
             {!register && (
                 <p className="text-sm my font-light w-full text-center">
@@ -99,7 +101,6 @@ const EmailLogin = () => {
                         className="w-5/6 border border-neutral-400 hover:shadow-md hover:shadow-neutral-400 bg-neutral-200 rounded-xl p-2 text-center mx-4 mb-4 focus:shadow-md focus:shadow-neutral-400 focus:outline-0"
                     />
                 </div>
-
                 {register && (
                     <div className="flex flex-col items-center justify-center w-full">
                         <p className={`mb-2 text-xl  `}>Confirmation Password:</p>
@@ -117,11 +118,9 @@ const EmailLogin = () => {
                     </div>
                 )}
                 <button type="submit" className="w-32 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black">
-                    {loading ? (
-                        <img src="/icons/spinner.svg" alt="Loading..." className="animate-spin w-4 h-4" />
-                    ) : (
+                    {
                         <span>{register ? "Create" : "Sign In"}</span>
-                    )}
+                    }
                 </button>
             </form>
         </div>
