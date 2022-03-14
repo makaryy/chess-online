@@ -8,6 +8,7 @@ import { collection, query, where, getDocs, setDoc, doc, DocumentData } from "fi
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { setGame } from "../redux/game";
 import Loading from "./Loading";
+import GameApp from "./GameApp";
 
 export interface Member {
     color: "w" | "b";
@@ -22,7 +23,7 @@ const Home = () => {
     const [user, loading] = useAuthState(auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [games, setGames] = useState<DocumentData[]>([]);
+    const [games, setGames] = useState<DocumentData[] | undefined>(undefined);
 
     const startGame = async () => {
         const member: Member = {
@@ -68,14 +69,14 @@ const Home = () => {
 
     return (
         <div className="flex flex-col h-screen justify-center container items-center mx-auto">
-            {loading && <Loading/>}
+            {loading && <Loading />}
             {user?.uid && (
                 <div className="flex flex-col items-center justify-center w-full">
                     <div className="absolute top-8 right-8">
                         <button onClick={async () => await signOut(auth)}>SIGN OUT</button>
                     </div>
-                    <p className="text-3xl my-16 font-medium">{`Welcome, ${user.displayName}. Start a new game or join your friend.`}</p>
-                    <button 
+                    <p className="text-3xl my-16 font-medium text-center">{`Welcome, ${user.displayName}. Start a new game or join your friend.`}</p>
+                    <button
                         className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center"
                         onClick={startGame}>
                         <img src="/icons/new-game-icon.svg" alt="google" className="w-5 h-5 mx-3" />
@@ -90,32 +91,68 @@ const Home = () => {
                         Join existing game
                     </button>
                     <div className="flex flex-col justify-center text-center">
-                        {games.length > 0 && (
-                            <div>
-                                <p className="text-2xl my-2 font-normal">Choose your oponent</p>
-                                {games.map((g) => {
-                                    return (
-                                        <div
-                                            className="w-full text-black cursor-pointer"
-                                            key={g.id}
-                                            onClick={() => {
-                                                const oponent = g.members.find((m: Member) => m.uid !== user.uid);
-                                                const color = oponent.color === "w" ? "b" : "w";
-                                                const newUser: Member = {
-                                                    uid: user.uid,
-                                                    color,
-                                                    creator: false,
-                                                    displayName: user.displayName
-                                                };
-                                                dispatch(setGame({ id: g.id, members: [...g.members, newUser], status: "in_progress" }));
-                                                navigate(`game/${g.id}`);
-                                            }}>
-                                            {g.id}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
+                        {games &&
+                            (games.length > 0 ? (
+                                <div>
+                                    {games.map((g) => {
+                                        return (
+                                            <div className="w-full text-black" key={g.id}>
+                                                {g.members[0].uid !== user.uid ? (
+                                                    <>
+                                                        <p className="text-xl my-2 font-normal">Choose your oponent</p>
+                                                        <div
+                                                            className="flex flex-row w-full mx-auto my-1 justify-center cursor-pointer"
+                                                            onClick={() => {
+                                                                const oponent = g.members.find((m: Member) => m.uid !== user.uid);
+                                                                const color = oponent.color === "w" ? "b" : "w";
+                                                                const newUser: Member = {
+                                                                    uid: user.uid,
+                                                                    color,
+                                                                    creator: false,
+                                                                    displayName: user.displayName
+                                                                };
+                                                                dispatch(
+                                                                    setGame({ id: g.id, members: [...g.members, newUser], status: "in_progress" })
+                                                                );
+                                                                navigate(`game/${g.id}`);
+                                                            }}>
+                                                            <img
+                                                                src={g.members[0].photoURL ? g.members[0].photoURL : "/icons/circle-user.svg"}
+                                                                alt=""
+                                                                className="w-6 h-6 rounded-full mx-3"
+                                                            />
+                                                            <span>{g.members[0].displayName}</span>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <div>
+                                                        <p className="text-xl my-2 font-normal">
+                                                            You have started a game before <br />
+                                                            <span
+                                                                className="underline cursor-pointer"
+                                                                onClick={() => {
+                                                                    dispatch(setGame({ id: g.id, members: g.members, status: g.status }));
+                                                                    navigate(`/game/${g.id}`);
+                                                                }}>
+                                                                Rejoin
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div>
+                                    <p className="text-xl my-2 font-normal">
+                                        There is currently no game you could join <br />{" "}
+                                        <span className="underline cursor-pointer" onClick={startGame}>
+                                            Start new game instead
+                                        </span>
+                                    </p>
+                                </div>
+                            ))}
                     </div>
                 </div>
             )}
