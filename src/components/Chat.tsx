@@ -1,5 +1,5 @@
 import { collection, doc, getDocs, query, setDoc, updateDoc, where, onSnapshot } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { auth, db } from "../firebase/firebase";
@@ -10,6 +10,7 @@ import { setChat } from "../redux/chat";
 const Chat = () => {
     const [user] = useAuthState(auth);
     const [message, setMessage] = useState("");
+    const scrollRef = useRef<null | HTMLDivElement>(null);
     const chat = useSelector((state: RootState) => state.chat);
     const game = useSelector((state: RootState) => state.game);
     const dispatch = useDispatch();
@@ -65,11 +66,13 @@ const Chat = () => {
             ];
             setMessage("");
             dispatch(setChat({ ...chat, messages: updatedMessages }));
+            if (scrollRef && scrollRef.current) scrollRef.current.scrollIntoView();
             if (chat.id) await updateDoc(doc(db, "chats", chat.id), { messages: updatedMessages });
         }
     };
     return (
-        <div className="bg-neutral-700 w-2/5 h-screen flex flex-col-reverse">
+        <div className="bg-neutral-700 w-2/5 h-screen flex flex-col-reverse max-h-screen overflow-y-scroll scroll-smooth">
+            <div ref={scrollRef} />
             <div className="flex flex-row w-full">
                 <form className="w-full" onSubmit={(e) => sendMessage(e)}>
                     <input
@@ -84,13 +87,13 @@ const Chat = () => {
                     </button>
                 </form>
             </div>
-            <div className="h-max-content max-h-screen flex flex-col justify-center p-2 text-white font-light">
+            <div className="h-full max-h-full flex flex-col justify-end p-2 text-white font-light ">
                 {chat &&
                     chat.messages.map((m, i) => {
                         const player = m.user?.uid === user?.uid ? true : false;
                         return (
                             <div className={player ? "flex flex-row-reverse w-full mx-auto my-1" : "flex flex-row w-full mx-auto my-1"} key={i}>
-                                <img src={m.img} alt="" className="w-6 h-6 rounded-full mx-3"/>
+                                <img src={m.img} alt="" className="w-6 h-6 rounded-full mx-3" />
                                 <span className={player ? "bg-blue-500 rounded-2xl px-2" : "bg-red-500 rounded-2xl px-2"}>{m.msg}</span>
                             </div>
                         );
