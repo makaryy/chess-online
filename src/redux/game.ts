@@ -5,12 +5,14 @@ interface GameState {
     status: string;
     members: Member[];
     id: string;
+    chatId: string;
 }
 
 const initialState: GameState = {
     status: "waiting",
     members: [],
-    id: ""
+    id: "",
+    chatId: ""
 };
 
 const gameSlice = createSlice({
@@ -21,6 +23,7 @@ const gameSlice = createSlice({
             state.status = action.payload.status;
             state.members = action.payload.members;
             state.id = action.payload.id;
+            state.chatId = action.payload.chatId;
         },
         updateMembers: (state, action: PayloadAction<Member[]>) => {
             state.members = action.payload;

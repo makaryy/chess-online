@@ -120,7 +120,6 @@ const GameApp = () => {
                         ]
                     })
                 );
-                console.log(gameData.gameData);
             }
         }
     });

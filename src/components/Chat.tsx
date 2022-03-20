@@ -1,10 +1,9 @@
-import { collection, doc, getDocs, query, setDoc, updateDoc, where, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, updateDoc, onSnapshot, getDoc } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { auth, db } from "../firebase/firebase";
 import { RootState } from "../redux/store";
-import { v4 as uuidv4 } from "uuid";
 import { setChat } from "../redux/chat";
 
 const Chat = () => {
@@ -14,36 +13,38 @@ const Chat = () => {
     const chat = useSelector((state: RootState) => state.chat);
     const game = useSelector((state: RootState) => state.game);
     const dispatch = useDispatch();
-    useEffect(() => {
-        const initChat = async () => {
-            const member = game.members.find((m) => m.uid === user?.uid);
-            if (member?.creator) {
+
+    const initChat = async () => {
+        const member = game.members.find((m) => m.uid === user?.uid);
+        if (member && member.creator) {
+            const tempChat = {
+                gameId: game.id,
+                id: game.chatId,
+                messages: []
+            };
+            await setDoc(doc(db, "chats", game.chatId), tempChat);
+            dispatch(setChat(tempChat));
+        } else {
+            const documentSnapshot = await getDoc(doc(db, "chats", game.chatId));
+
+            const chatData = documentSnapshot.data();
+            if (chatData) {
                 const tempChat = {
-                    gameId: game.id,
-                    id: uuidv4(),
-                    messages: []
+                    gameId: chatData.gameId,
+                    id: chatData.id,
+                    messages: chatData.messages
                 };
-                await setDoc(doc(db, "chats", tempChat.id), tempChat);
                 dispatch(setChat(tempChat));
-            } else {
-                const q = query(collection(db, "chats"), where("gameId", "==", game.id));
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach(async (doc) => {
-                    const chatData = await doc.data();
-                    const tempChat = {
-                        gameId: chatData.gameId,
-                        id: chatData.id,
-                        messages: chatData.messages
-                    };
-                    dispatch(setChat(tempChat));
-                });
             }
-        };
+        }
+    };
+
+    useEffect(() => {
         initChat();
     }, []);
 
     useEffect(() => {
-        if (chat.id) {
+        if (chat.id && chat.id === game.chatId) {
             onSnapshot(doc(db, "chats", chat.id), async (data) => {
                 const newChat = await data.data();
                 dispatch(setChat({ ...chat, messages: newChat?.messages }));
@@ -67,7 +68,7 @@ const Chat = () => {
             setMessage("");
             dispatch(setChat({ ...chat, messages: updatedMessages }));
             if (scrollRef && scrollRef.current) scrollRef.current.scrollIntoView();
-            if (chat.id) await updateDoc(doc(db, "chats", chat.id), { messages: updatedMessages });
+            chat.id && (await updateDoc(doc(db, "chats", chat.id), { messages: updatedMessages }));
         }
     };
     return (

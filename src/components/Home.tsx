@@ -35,7 +35,8 @@ const Home = () => {
         const game = {
             status: "waiting",
             members: [member],
-            id: uuidv4()
+            id: uuidv4(),
+            chatId: uuidv4()
         };
         try {
             await setDoc(doc(db, "games", game.id), game);
@@ -112,7 +113,12 @@ const Home = () => {
                                                                     displayName: user.displayName
                                                                 };
                                                                 dispatch(
-                                                                    setGame({ id: g.id, members: [...g.members, newUser], status: "in_progress" })
+                                                                    setGame({
+                                                                        id: g.id,
+                                                                        members: [...g.members, newUser],
+                                                                        status: "in_progress",
+                                                                        chatId: g.chatId
+                                                                    })
                                                                 );
                                                                 navigate(`game/${g.id}`);
                                                             }}>
@@ -131,7 +137,9 @@ const Home = () => {
                                                             <span
                                                                 className="underline cursor-pointer"
                                                                 onClick={() => {
-                                                                    dispatch(setGame({ id: g.id, members: g.members, status: g.status }));
+                                                                    dispatch(
+                                                                        setGame({ id: g.id, members: g.members, status: g.status, chatId: g.chatId })
+                                                                    );
                                                                     navigate(`/game/${g.id}`);
                                                                 }}>
                                                                 Rejoin

@@ -14,23 +14,20 @@ export interface Message {
 }
 
 interface ChatState {
-    gameId: string;
     id: string | undefined;
     messages: Message[];
 }
 
 const initialState: ChatState = {
-    gameId: "",
     id: undefined,
     messages: []
 };
 
 const chatSlice = createSlice({
-    name: "game",
+    name: "chat",
     initialState,
     reducers: {
         setChat: (state, action: PayloadAction<ChatState>) => {
-            state.gameId = action.payload.gameId;
             state.id = action.payload.id;
             state.messages = action.payload.messages;
         },
