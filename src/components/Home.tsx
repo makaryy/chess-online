@@ -77,13 +77,13 @@ const Home = () => {
                     </div>
                     <p className="text-3xl my-16 font-medium text-center">{`Welcome, ${user.displayName}. Start a new game or join your friend.`}</p>
                     <button
-                        className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center"
+                        className="w-40 md:w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center"
                         onClick={startGame}>
                         <img src="/icons/new-game-icon.svg" alt="google" className="w-5 h-5 mx-3" />
                         Start new Game
                     </button>
                     <button
-                        className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center"
+                        className="w-40 md:w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center"
                         onClick={async () => {
                             await getGames();
                         }}>
@@ -169,19 +169,19 @@ const Home = () => {
 
                     <button
                         onClick={googleLogin}
-                        className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center">
+                        className="w-40 md:w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center">
                         <img src="/icons/google-icon.svg" alt="google" className="w-5 h-5 mx-3" />
                         Google
                     </button>
 
                     <Link to="../login/email">
-                        <button className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center">
+                        <button className="w-40 md:w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center">
                             <img src="/icons/email-icon.svg" alt="email" className="w-5 h-5 mx-3" />
                             Email
                         </button>
                     </Link>
                     <Link to="../login/guest">
-                        <button className="w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center">
+                        <button className="w-40 md:w-96 h-12 p-2 m-3 border border-black rounded-xl hover:shadow-md hover:shadow-black flex items-center justify-center">
                             <img src="/icons/user-icon.svg" alt="guest" className="w-5 h-5 mx-3" />
                             Guest
                         </button>
