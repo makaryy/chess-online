@@ -125,7 +125,7 @@ const GameApp = () => {
     });
 
     return (
-        <div className="flex lg:flex-row sm:flex-col xs:flex-col md:flex-col">
+        <div className="flex lg:flex-row flex-col">
             <div className="flex container mx-auto min-h-screen items-center justify-center">
                 <DndProvider backend={HTML5Backend}>
                     {alert && <Alert alert={alert} />}

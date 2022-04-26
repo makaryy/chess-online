@@ -8,7 +8,6 @@ import { collection, query, where, getDocs, setDoc, doc, DocumentData } from "fi
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { setGame } from "../redux/game";
 import Loading from "./Loading";
-import GameApp from "./GameApp";
 
 export interface Member {
     color: "w" | "b";

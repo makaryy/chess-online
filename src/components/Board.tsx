@@ -42,7 +42,7 @@ const Board = () => {
     };
 
     return (
-        <div className="w-[800px] h-[800px] grid grid-cols-8 grid-rows-8 mx-auto my-1">
+        <div className="lg:w-[800px] lg:h-[800px] md:w-[740px] md:h-[740px] sm:w-[620px] sm:h-[620px] h-96 w-96 grid grid-cols-8 grid-rows-8 mx-auto my-1">
             {color === "w" &&
                 board.flat().map((piece: BoardPieceType, i: number) => {
                     return <BoardSquare piece={piece} key={i} i={i} position={getPosition(i)} />;

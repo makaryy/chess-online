@@ -72,7 +72,7 @@ const Chat = () => {
         }
     };
     return (
-        <div className="bg-neutral-700 w-2/5 h-screen flex flex-col-reverse max-h-screen overflow-y-scroll scroll-smooth">
+        <div className="bg-neutral-700 lg:w-2/5 w-full lg:h-screen h-96 flex flex-col-reverse max-h-screen overflow-y-scroll scroll-smooth">
             <div ref={scrollRef} />
             <div className="flex flex-row w-full">
                 <form className="w-full" onSubmit={(e) => sendMessage(e)}>
